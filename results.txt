@@ -1,2 +1,9 @@
-If I were to change the population size, it changes both the speed at which the program runs, and the final message. For example, if I were to reduce the population size to say 10, the code would run very quickly but return an output that had a levenshtein distance of about 13. This shows that it is still far from what the target text should be in the 500 generations given. On the other hand, if we increased the population size to 500, the code would be able to react the target text well before the 500th generation but it will take much longer to run. This is due to the process of checking each random message. Smaller populations work best for smaller target messages.  
-
+If I were to change the population size, it changes both the speed at which the
+program runs, and the final message. For example, if I were to reduce the
+population size to say 10, the code would run very quickly but return an output
+that had a levenshtein distance of about 13. This shows that it is still far
+from what the target text should be in the 500 generations given. On the other
+hand, if we increased the population size to 500, the code would be able to
+react the target text well before the 500th generation but it will take much
+longer to run. This is due to the process of checking each random message.
+Smaller populations work best for smaller target messages.
