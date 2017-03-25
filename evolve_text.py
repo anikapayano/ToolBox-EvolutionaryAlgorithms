@@ -91,9 +91,26 @@ class Message(list):
 # -----------------------------------------------------------------------------
 # Genetic operators
 # -----------------------------------------------------------------------------
+def levenshtein_distance(s1, s2):
+    if len(s1) < len(s2):
+        return levenshtein_distance(s2, s1)
 
-# TODO: Implement levenshtein_distance function (see Day 9 in-class exercises)
-# HINT: Now would be a great time to implement memoization if you haven't
+    # len(s1) >= len(s2)
+    if len(s2) == 0:
+        return len(s1)
+
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1       # than s2
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+
+    return previous_row[-1]
+
 
 def evaluate_text(message, goal_text, verbose=VERBOSE):
     """
@@ -121,15 +138,25 @@ def mutate_text(message, prob_ins=0.05, prob_del=0.05, prob_sub=0.05):
     """
 
     if random.random() < prob_ins:
-        # TODO: Implement insertion-type mutation
-        pass
+        m = list(message)
+        i = random.randint(0, len(m) - 1)
+        m.insert(i, random.choice(VALID_CHARS))
+        message = ''.join(m)
 
-    # TODO: Also implement deletion and substitution mutations
-    # HINT: Message objects inherit from list, so they also inherit
-    #       useful list methods
-    # HINT: You probably want to use the VALID_CHARS global variable
+    if random.random() < prob_del:
+        m = list(message)
+        i = random.randint(0, len(m) - 1)
+        m.pop(i)
+        message = ''.join(m)
 
-    return (message, )   # Length 1 tuple, required by DEAP
+    if random.random() < prob_sub:
+        m = list(message)
+        i = random.randint(0, len(m)- 1)
+        m[i] = random.choice(VALID_CHARS)
+        message = ''.join(m)
+
+    return (Message(message), )   # Length 1 tuple, required by DEAP
+
 
 
 # -----------------------------------------------------------------------------
@@ -170,7 +197,7 @@ def evolve_string(text):
 
     # Get configured toolbox and create a population of random Messages
     toolbox = get_toolbox(text)
-    pop = toolbox.population(n=300)
+    pop = toolbox.population(n=10)
 
     # Collect statistics as the EA runs
     stats = tools.Statistics(lambda ind: ind.fitness.values)
